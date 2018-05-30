@@ -26,7 +26,6 @@ from flask_security import Security, RoleMixin, UserMixin
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_security.utils import encrypt_password
 from os.path import join, dirname
-import cx_Oracle
 
 ###### EXTRA CODE FOR Future Projects ######
 
@@ -49,12 +48,15 @@ app = Flask(__name__)
 
 # Creating envirorment variable normaly done in config.py
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'oracle+cx_oracle://eddy:password@localhost:1521/xe'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'oracle://eddy:password@localhost:1521/xe'
 app.config['SQLALCHEMY_MIGRATE_REPO'] = join(dirname(__file__), 'db_repository')
-
+app.config['SECRET_KEY'] = 'RANDOMLETTERSFWLFHO212421049RFWFO'
+app.config['SECURITY_PASSWORD_HASH'] = 'pbkdf2_sha512'
+app.config['SECURITY_PASSWORD_SALT'] = 'RE2WOROWIER823NVSJNA'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # Establishing DB connection
-db = SQLAlchemy(app, session_options={'autocommit': False, ' autoflush': False})
+db = SQLAlchemy(app)
 
 # Letting Migration tool to mangage upgrades and downgrates to the DB
 manager = Manager(app)
@@ -67,10 +69,7 @@ class Base(db.Model):
         When called these fields will be added to the table. Prevents duplicated code.
         """
         __abstract__ = True
-        id = db.Column(db.Integer, primary_key=True)
-        created_At = db.Column(db.DateTime, default=db.func.current_timestamp())
-        modified_at = db.Column(db.DateTime, default=db.func.current_timestap(),
-                                onupdate=db.func.current_timestamp())
+        id = db.Column(db.Integer, db.Sequence('id'), primary_key=True)
 
 class Role(Base, RoleMixin):
         """
@@ -81,7 +80,7 @@ class Role(Base, RoleMixin):
         RoleMixin is used for Flask Security. Mixin for Role model definitions"""
 
         __tablename__ = 'auth_role'
-        name = db.Column(db.String(80), nullable=False, unique=True)
+        name = db.Column(db.String(80))
         description = db.Column(db.String(255))
 
         def __init__(self, **kwargs):
@@ -122,17 +121,15 @@ class User (Base, UserMixin):
         """
 
         __tablename__ = 'auth_user'
-        username = db.Column(db.String(255),nullable=False, unique=True)
-        email = db.Column(db.String(255),nullable=False, unique=True)
-        password = db.Column(db.String(255),nullable=False)
-        first_name = db.Column(db.String(255))
+        username = db.Column(db.String(255), nullable=False, unique=True)
+        email = db.Column(db.String(255), nullable=False, unique=True)
+        password = db.Column(db.String(255), nullable=False)
+        first_name = db.Column(db.String(255), nullable=False)
         last_name = db.Column(db.String(255))
         active = db.Column(db.Boolean())
         confirmed_at = db.Column(db.DateTime())
         last_login_at = db.Column(db.DateTime())
         current_login_at = db.Column(db.DateTime())
-        last_login_ip = db.Column(db.String(255))
-        current_login_ip = db.Column(db.String(255))
         login_count = db.Column(db.Integer)
         # This is a Many to Many Relationship because I created a helper table
         # A one to Many I would NOT have secondary ex. "backref= 'users', lazy='dynamic'"
@@ -182,20 +179,22 @@ class DBRegUser(Command):
                 self.db = db
 
         def run(self):
-                """We are creating a few roles and users to be created."""
+                """We are creating a two roles and two users."""
                 for i in range(2):
                         try:
-                                user_datastore.create_role(
+                                user_datastore.find_or_create_role(
                                         name='user{}'.format(i),
                                         description='This is {} role'.format(i)
                                 )
                                 self.db.session.commit()
-                        except:
-                                print("Huston We have an issue")
+                       # The IntegrityError is due to duplicates because of how table is made
+                        except IntegrityError:
+                                pass
 
                 for i in range(2):
                         try:
                                 user_datastore.create_user(
+                                        username='user{}'.format(i),
                                         email='test{}@test.com'.format(i),
                                         password=encrypt_password('test'),
                                         first_name='Person{}'.format(i),
@@ -206,9 +205,14 @@ class DBRegUser(Command):
                         # The IntegrityError is due to duplicates because of how table is made
                         except IntegrityError:
                                 pass
+                
+                users = User.query.all()
+                for u in users:
+                        print('username:{} email:{} first name:{} last name:{}'.format(u.username, u.email, u.first_name, u.last_name))
+
 
 manager.add_command('runserver', Server(host='localhost', post=5050))
-manager.add_command('db_creae_reg_user', DBRegUser(db))
+manager.add_command('dbCreateRegUser', DBRegUser(db))
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':

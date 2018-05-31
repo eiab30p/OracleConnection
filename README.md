@@ -41,12 +41,18 @@ Since I do not have a front end we are going to use the test case.
 
     python testing_connection.py dbCreateRegUser
 
-
-NOTES Oracle:
+**NOTES Oracle:***
 
 Ensure a user(schema) has all the needed permissions to run queries. Below are the ones I used to achive the bare minimum
 
     grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER, CREATE TYPE,CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE, CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
+
+**More Oracle:**
+If the application is not connecting to Oracle make sure the listener is running. For Ubunutu below is how I ran it.
+
+    sudo su oracle-xe start
+
+Oracale Express is orginized at XE is your databse and then each user is the schema where you can share schemas between each other and the "OBJECTS" are the tables and other normal databse functions.
 
 **NOTES Migration:**
 

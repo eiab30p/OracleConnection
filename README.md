@@ -30,25 +30,37 @@ Since this is one concept but using two different tools, SQLAlchemy and PonyORM,
 
 1) Create a PonyORM_Example directory and SQLAlchemy_Example
 
-    `mkdir PonyORM_Example  SQLAlchemy_Example`
+    ```sh
+    mkdir PonyORM_Example  SQLAlchemy_Example
+    ```
 
 2) cd into either projects. You'll run the below command in both directories.
 
-    `python -m venv venv`
+    ```sh
+    python3 -m venv venv
+    ```
 
 3) Once you have this set up you should see another directory named venv in the project. To activate the enviorment by running the below command. Ensure you remember which venv you activate.
 
-    `source vemv/bin/activate`
+    ```bash
+    source vemv/bin/activate
+    ```
 
 4) Once in this "mode" you can runn all your installs and run the project without worring about a lib conflict issue.
 
-    `pip install -r requirements.txt`  
+    ```bash
+    pip install -r requirements.txt
+    ```
     or  
-    `pip install Flask`
+    ```bash
+    pip install Flask
+    ```
 
 5) To get out of this venv or you are done you will run the below command.
 
-    `decativate`
+    ```bash
+    decativate
+    ```
 
 ## Orcle Express 11G 2R
 
@@ -66,24 +78,31 @@ Oracle Serivces contains **>** Databases (ONLY XE for Express) which contains **
 
 Ensure a user(schema) has all the needed permissions to run queries. Below are the ones I used to achive the bare minimum
 
-    grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER, CREATE TYPE,CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE, CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
+```bash
+grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER, CREATE TYPE,CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE,CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
+```
 
 #### Starting Oracle Notes
 
 If the application is not connecting to Oracle make sure the listener is running. For Ubunutu below is how I ran it.
 
-    sudo su oracle-xe start
+```sh
+sudo su oracle-xe start
+```
 
 If this des not work try running
 
-    lsnrctl start
+```sh
+lsnrctl start
+```
 
 If that doesn't work try running.
 
-    sudo rm -rf /var/temp/.oracle/
+```sh
+sudo rm -rf /var/temp/.oracle/
+```
 
 For some reason you need to remove socket files...not sure why but when starting listener you will not be able to do so.
-
 
 ##### Source
 
@@ -92,4 +111,3 @@ For some reason you need to remove socket files...not sure why but when starting
 [Oracle Installation](https://mikesmithers.wordpress.com/2011/11/26/installing-oracle-11gxe-on-mint-and-ubuntu/)
 
 [lsnrcrl Issue](https://knowledge.exlibrisgroup.com/Primo/Knowledge_Articles/Oracle_Listener_fails_to_start%2C_error_messages_TNS-12555%2C_TNS-12560%2C_TNS-00525)
-

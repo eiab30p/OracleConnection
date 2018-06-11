@@ -1,90 +1,95 @@
-# I'm using VS code to dev this project in a Ubuntu Box
+# Connecting to Oracle Express 11g R2 using an ORM in Python3
 
-The idea of this is to try out oracel to a colse work envirorment as possible. I'll list the libraries and extentions used in this IDE to hopefully better form in the real workstation in 3.0
+## Summary
 
-VS CODE Extentions:
+This is a "tutorial" of how to connect to Oracle Express using Python
+through an ORM Tool. Due to also wanting the ability to monitor database changes there seemed to be two popular choices that would achive this goal, **SQLALchemy** and **PonyORM**.
 
-- python (ms-python.python)
-- markdown lint (markdownlint)
-- pylint()
+____________
 
-python3.0:
-We are going to work in a virtuall env for this.
+## Terms
 
-- virtualenv (THis is to create an independent virtual env.)
-- cx_Oracle (Connection to the oracle DB)
-- sqlalchemy (pythonic modualr sql query)
+* **ORM**: An Object Relational Mapping (ORM) is a programming techinque for converting between incompatible type systems using OOP languageway. In Python, its the ability to translate python classes to tables on relational databases and automatically converts function calls to SQL statments.
 
-use virtualenv
+## Enviorment
 
-    - run "python -m venv venv" to get virtual env
-    - run "source venv/bin/activate" to get in your virtual env
-    - run pip install -r requirements.txt to install python libraries
+* Oracle VM VirtualBox
+  * Ubuntu
+  * Python 3
+  * Oracle Express 11R 2G
 
-Once you have all that set up you are good to go. You can now feel free to use the python pip without worries
+____________
 
-use migration
+Set Up
+======
+## Python
 
-    - If it is your first migration you will need to run init to create the repo folder.
-        - python testing_connection.py db init
-    - Once the folder is created you will need the migration to detect changes in your    tables.
-        - python testing_connection.py db migrate
-    - *STOP!* At this point you may need to help SQLAlchemy with the upgrade for          Sequencesing *PLEASE LOOK AT NOTES!* Then run the below command
-        -python testing_connection.py db upgrade
+Install [Python](https://www.python.org/)
 
-Run the Application:
-Traditionally if I had a front end I would tell you to run it by
+Since this is one concept but using two different tools, SQLAlchemy and PonyORM, we will be running two independent virtual enviorment to keep our libraries seperated when installing avoiding possible conflicts. Below are the steps to create your enviorments.
 
-    python testing_conntection.py runserver
+1) Create a PonyORM_Example directory and SQLAlchemy_Example
 
-Since I do not have a front end we are going to use the test case.
+    `mkdir PonyORM_Example  SQLAlchemy_Example`
 
-    python testing_connection.py dbCreateRegUser
+2) cd into either projects. You'll run the below command in both directories.
 
-**NOTES Oracle:***
+    `python -m venv venv`
+
+3) Once you have this set up you should see another directory named venv in the project. To activate the enviorment by running the below command. Ensure you remember which venv you activate.
+
+    `source vemv/bin/activate`
+
+4) Once in this "mode" you can runn all your installs and run the project without worring about a lib conflict issue.
+
+    `pip install -r requirements.txt`  
+    or  
+    `pip install Flask`
+
+5) To get out of this venv or you are done you will run the below command.
+
+    `decativate`
+
+## Orcle Express 11G 2R
+
+### It is okay if you want to cry when dealing with Oracle. It is not an easy installation and requires constant adjustment when working with it
+
+Overall, Oracle is a **HUGE** powerful tool that can do a lot in regards to data. Regardless, It was a constant battle with Oracle in my enviorment. Below is a link to install Oracle Express in a Ubuntu env. Followed by notes and comments of things that need to be done that I forgot or the link did not mentioned. ENJOY!
+
+https://mikesmithers.wordpress.com/2011/11/26/installing-oracle-11gxe-on-mint-and-ubuntu/
+
+#### Oracle Scructure(?)
+
+Oracle Serivces contains **>** Databases (ONLY XE for Express) which contains **>** table spaces which contains **>** schemas (users which can share object) which contains **>** objects (tables, triggers, and ect.)
+
+#### Permissions Notes
 
 Ensure a user(schema) has all the needed permissions to run queries. Below are the ones I used to achive the bare minimum
 
     grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER, CREATE TYPE,CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE, CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
 
-**More Oracle:**
+#### Starting Oracle Notes
+
 If the application is not connecting to Oracle make sure the listener is running. For Ubunutu below is how I ran it.
 
     sudo su oracle-xe start
 
-Oracale Express is orginized at XE is your databse and then each user is the schema where you can share schemas between each other and the "OBJECTS" are the tables and other normal databse functions.
+If this des not work try running
 
-**NOTES Migration:**
+    lsnrctl start
 
-To have auto increamence you will need to use Sequence. SqlAlchemy does not know how to
-create sequences aparently. Therefore we have to change the upgrade code in the migration folder.
+If that doesn't work try running.
 
-    https://stackoverflow.com/questions/35775342/using-sqlalchemy-with-racle-and-flask-to-create-sequences-for-primary-key?rq=1
+    sudo rm -rf /var/temp/.oracle/
 
-In your migration folder, version#.py file under upgrades you will need to have something like below.
-
-    op.execute('create sequence id start with 1 increment by 1 nocache nocycle')
-
-Now you can call it in your model as I did in my Base class
-
-**MORE**
-
-The migration only creates tables but does not create modifications in file. Meaning we may need to create our alter statments. FML Below is an example
-
-    def upgrade():
-        # ### commands auto generated by Alembic - please adjust! ###
-        op.alter_column('auth_user', 'first_name', nullable=False)
-        # ### end Alembic commands ###
+For some reason you need to remove socket files...not sure why but when starting listener you will not be able to do so.
 
 
-    def downgrade():
-        # ### commands auto generated by Alembic - please adjust! ###
-        op.alter_column('auth_user', 'first_name', nullable=True)
+##### Source
 
-     # ### end Alembic commands ###
+[Markup Help](https://confluence.atlassian.com/bitbucketserver/markdown-syntax-guide-776639995.html)
 
-***PonyORM and PonyUp***
-PonyORM is like SQLAlchemy 
-PonyUp is like Migration or Alembic
+[Oracle Installation](https://mikesmithers.wordpress.com/2011/11/26/installing-oracle-11gxe-on-mint-and-ubuntu/)
 
+[lsnrcrl Issue](https://knowledge.exlibrisgroup.com/Primo/Knowledge_Articles/Oracle_Listener_fails_to_start%2C_error_messages_TNS-12555%2C_TNS-12560%2C_TNS-00525)
 

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5de78ec2669a
+Revision ID: a1a628613df9
 Revises: 
-Create Date: 2018-05-30 15:56:18.168746
+Create Date: 2018-06-12 11:51:01.067178
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5de78ec2669a'
+revision = 'a1a628613df9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,19 +24,16 @@ def upgrade():
     sa.Column('description', sa.String(length=255), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.execute('create sequence id start with 1 increment by 1 nocache nocycle')
     op.create_table('auth_user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=255), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
-    sa.Column('first_name', sa.String(length=255), nullable=True),
+    sa.Column('first_name', sa.String(length=255), nullable=False),
     sa.Column('last_name', sa.String(length=255), nullable=True),
     sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('confirmed_at', sa.DateTime(), nullable=True),
     sa.Column('last_login_at', sa.DateTime(), nullable=True),
-    sa.Column('current_login_at', sa.DateTime(), nullable=True),
-    sa.Column('login_count', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
@@ -55,5 +52,4 @@ def downgrade():
     op.drop_table('roles_users')
     op.drop_table('auth_user')
     op.drop_table('auth_role')
-    op.execute(sa.schema.DropSequence(sa.Sequence('id')))
     # ### end Alembic commands ###

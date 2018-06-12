@@ -1,7 +1,6 @@
-# SQL Alachemy     
+# PonyORM and PonyUp
 
 
-***PonyORM and PonyUp***
 PonyORM is like SQLAlchemy 
 PonyUp is like Migration or Alembic
 
@@ -24,4 +23,10 @@ Traditionally if I had a front end I would tell you to run it by
 
 Since I do not have a front end we are going to use the test case.
 
-    python testing_connection.py dbCreateRegUser
+   python testing_connection.py dbCreateRegUser
+
+This step is not realling installing but it is required for migration. You will need to create a migration director called migration
+
+```sh
+mkdir migrations
+```

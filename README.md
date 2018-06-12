@@ -2,8 +2,7 @@
 
 ## Summary
 
-This is a "tutorial" of how to connect to Oracle Express using Python
-through an ORM Tool. Due to also wanting the ability to monitor database changes there seemed to be two popular choices that would achive this goal, **SQLALchemy** and **PonyORM**.
+This is a "tutorial" of how to connect to Oracle Express using Python through an ORM Tool. Due to also wanting the ability to monitor database changes there seemed to be two popular choices that would achive this goal, **SQLALchemy** and **PonyORM**.
 
 ____________
 
@@ -82,6 +81,20 @@ Ensure a user(schema) has all the needed permissions to run queries. Below are t
 grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER, CREATE TYPE,CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE,CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
 ```
 
+#### Oracle Tablespace Issue
+
+SQLAlchemy Does work!!! It needes to have a proper tablesapce. One of the issues SQLAlchemy has and you can read in the sources at the bottom is that when creating a user the default tablespace will be in SYSTEM. Well SQLAlchemy avoids the SYSTEM tablespacewhen making modifications because the proper way to create schemas in Oracle is to create a new tablespace and then enter users there or enter them in the USERS tablespace. Regardless, you can change the users table space by running the below command. USERS can be the new default or you can create a new tablespace.
+
+```sh
+ALTER USER eddy DEFAULT TABLESPACE user;
+```
+
+NOTE! Ensure the tablespace is PERMANENT. You can Check that by running the below command.
+
+```sh
+SELECT tablespace_name, contents FROM dba_Tablespaces;
+```
+
 #### Starting Oracle Notes
 
 If the application is not connecting to Oracle make sure the listener is running. For Ubunutu below is how I ran it.
@@ -104,6 +117,11 @@ sudo rm -rf /var/temp/.oracle/
 
 For some reason you need to remove socket files...not sure why but when starting listener you will not be able to do so.
 
+#### ORA-27102: out of Memory Linux cannot allocate memory (WTF)
+
+This command may come up it did for me. Below is how I fixed it but probably will break something else.
+
+
 ##### Source
 
 [Markup Help](https://confluence.atlassian.com/bitbucketserver/markdown-syntax-guide-776639995.html)
@@ -111,3 +129,9 @@ For some reason you need to remove socket files...not sure why but when starting
 [Oracle Installation](https://mikesmithers.wordpress.com/2011/11/26/installing-oracle-11gxe-on-mint-and-ubuntu/)
 
 [lsnrcrl Issue](https://knowledge.exlibrisgroup.com/Primo/Knowledge_Articles/Oracle_Listener_fails_to_start%2C_error_messages_TNS-12555%2C_TNS-12560%2C_TNS-00525)
+
+[SQLAlechemy Oracle Not Seeing Changes](https://groups.google.com/forum/#!msg/sqlalchemy-alembic/Q32ErOhqyiM/OA6blzebDQAJ)
+
+[Checking Tablespace](http://dbaclass.com/article/ora-30033-undo-tablespace-cannot-be-specified-as-default-user-tablespace/)
+
+[Other Oracle User Fun](www.siue.edu/~dbock/cmis565/module14-1-users.htm)

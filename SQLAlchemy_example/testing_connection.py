@@ -2,7 +2,7 @@
 SQLAlachemy attempt to intigrate with Oracle.
 
 Below is an overly commented and overly detailed 
-example of how to connect to Oracle using Libraries
+example of how to connect to Oracle by using Libraries
 that work really well with SQLAlachemy. The 
 documentation for each Library can be found in the 
 Readme File.
@@ -89,7 +89,7 @@ class Base(db.Model):
         When inheriting this column the id will be unique sequence just the same name.
         """
         __abstract__ = True
-        id = db.Column(db.Integer, db.Sequence('BASE_SEQ', start=1), primary_key=True)
+        id = db.Column(db.Integer, db.Sequence('id', start=1), primary_key=True)
 
 class Role(Base, RoleMixin):
         """
@@ -111,7 +111,7 @@ class Role(Base, RoleMixin):
                 return '<Role %r>' % self.name
 
 # This is the helper table used in User Class for a Many to Many relationship
-roles_users = db.Table('roles_users',
+rolesandusers = db.Table('rolesandusers',
                         db.Column('user_id', db.Integer(),
                                    db.ForeignKey('auth_user.id')),
                         db.Column('role_id', db.Integer(),
@@ -148,9 +148,9 @@ class User (Base, UserMixin):
         password = db.Column(db.String(255), nullable=False)
         first_name = db.Column(db.String(255), nullable=False)
         last_name = db.Column(db.String(255))
-        active = db.Column(db.Boolean(), default=True)
+        active = db.Column(db.Boolean())
         # Required for Security Trackable and Confirmable
-        confirmed_at = db.Column(db.DateTime(null=True))
+        confirmed_at = db.Column(db.DateTime())
         last_login_at = db.Column(db.DateTime())
         current_login_at = db.Column(db.DateTime())
         last_login_ip = db.Column(db.String(255))
@@ -161,7 +161,7 @@ class User (Base, UserMixin):
         # You can use multiple backref to have your relationship load in the same 
         #               query ex. "backref=db.backref('users,lazy='joined'), lazy='dynamic')"
 
-        roles = db.relationship('Role', secondary=roles_users,
+        roles = db.relationship('Role', secondary=rolesandusers,
                                 backref=db.backref('users', lazy='dynamic'))
 
         def __repr__(self):
@@ -173,6 +173,24 @@ class User (Base, UserMixin):
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 # pass the user_datastore so we can use the Security fetures.
 security = Security(app, user_datastore)
+
+class DBInit(Command):
+        """
+        THis Creates SQL Tables from models above.
+        There are four manger commands for this. 
+                - init: initionalize db
+                - migrate: find changes
+                - upgrade: upgrade database
+                - downgrade: go back to previouse version
+        """
+
+        def __init__(self, db):
+                """Initionalizes db object."""
+                self.db = db
+
+        def run(self):
+                """Creates tables."""
+                self.db.create_all()
 
 # At this point we are getting into FLask_Scripts we are going to create different 
 ## classes and declare what CLI command is for them

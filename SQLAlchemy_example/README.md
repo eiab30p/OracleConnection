@@ -1,8 +1,12 @@
 # SQLAlachemy attempt to intigrate with Oracle
 
-SQLAlachemy is probably one of the most popular ORMs for python. It has a large community support with lots of library intergration to achive different task with the least amount of code. Normally SQLAlachemy would be my number one choice but due to the need of database version control it is not ideal. The resoults, findings, and code can be found in the directory.EDIT: SQLAlchemy does work!!!!!!!!!!!!!!!!!!!!!!!!
+SQLAlachemy is probably one of the most popular ORMs for python. It has a large community support with lots of library intergration to achive different task with the least amount of code. Normally SQLAlachemy would be my number one choice but due to the need of database version control it is not ideal. The resoults, findings, and code can be found in the directory. EDIT: SQLAlchemy does work!!!!!!!!!!!!!!!!!!!!!!!!
 
 DON'T FORGET TO BE IN YOUR VENV
+
+* SQLAlchemy relies on common design pattern to allow developers to create and ship enterprise-grade, production-ready applications easily.
+* Uses Object Pool Pattern to assist in caching frequently used objects instead of creating objects each request such as databse connections. Normally the maximum would be 5 connections when connecting to the database.
+* Uses Unit of Work design pattern. It is used to maintain a list of objects affected by a business transaction and to coordinate the writting out of these changes. For SQLAlchemy this is why we uses session.
 
 ## Installing Libraries
 
@@ -81,6 +85,57 @@ Since I just want to test the table and DB and see what Oracle and do with SQLAl
 python testing_connection.py dbCreateRegUser
 ```
 
+## Query Example
+
+In SQLALchemy we just have one simple query which returns the user but you can do a lot more than just that. Below are other examples of this.
+
+below are a list of functions that can be use when generator query
+
+* all() : returns everything
+* count() : returns the total number of rows of a query
+* filter() : filters the query by applying criteria
+* delete() : removes record that is matching
+* distinct() : applies distinct statement
+* exists() : adds an exists operator to a subquery
+* first() : returns first row
+* get() : returns the row referenced by the primary ket parameter passed as argument
+* join() : creates a join
+* limit() : limits the number of rows returned
+* orcer_by() : sets an order in the rows
+
+Below is an example of filter() which should return all movies after 15-01-01
+
+```python
+movies = session.query(Movie) \
+                .filter(Movie.realse_date > date(2015, 1, 1)) \
+                .all()
+```
+
+Theres also a filter_by() function which is different below is an example of how it is used. filter_by() uses attributes not objects
+
+```python
+db.users.filter_by(name='Jose')
+```
+
+Below is an example of a join() which should return all movies Dwayne Johnson participated in
+
+```python
+the_rock_movies = session.query(Movie) \
+                         .join(Actor, Movie.actors) \
+                         .filter(Actor.name == 'Dwayne Johnson') \
+                         .all()
+```
+
+When returning from a FLask view it is often used to return a 404 error for missing enties. Flask-SQLAlchemy provides a helper for this exact purpose. Instead of using get() you can use get_or_404() or instead of first() you can use first_or_404().
+
+```python
+@app.route('/user/<username>')
+def show_user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('show_user.html', user=user)
+```
+
+
 ## Detecting Column Changes
 
 After running the db init command Alembic does not automaticly add column change detection. Which is a bummber but a simple fix. In the evn.py file  under the migrations directory you will add the below line. **evn.py line 75**
@@ -101,11 +156,9 @@ Complete Configuration
 
 ## SQLALchemy Sequence Notes Edited: 6/12/2018
 
-~~To have auto increamence, WITH ORACLE ONLY, you will need to use Sequence. SqlAlchemy does not know how to create sequences on it's own aparently. Therefore we have to change the upgrade code in the migration folder.~~
+To have auto increamence, WITH ORACLE ONLY, you will need to use Sequence. SqlAlchemy does not know how to create sequences on it's own aparently. Therefore we have to change the upgrade code in the migration folder.
 
-~~Below is an example sequence. You'll go to your migration folder, then to a version#.py file and under the upgrades function you will need to have line like below. (id is the name of the sequence)~~
-
-You can add sequences in the Models in python. You do not have to make changes in the migration but it is nice to know.
+Below is an example sequence. You'll go to your migration folder, then to a version#.py file and under the upgrades function you will need to have line like below. (id is the name of the sequence)
 
 ```python
 op.execute('create sequence id start with 1 increment by 1 nocache nocycle')
@@ -131,20 +184,78 @@ def downgrade():
     # ### end Alembic commands ###
 ```
 
+##### Events, MapperEvents, and Listeners in SQLAlchemy
+Todo: This is a cool feature that could be useful once fully understood.
+docs.sqlalchemy.org/en/latest/orm/events.html#mapper-events
+
+## SQLAlchemy Model Column Types
+
+For SQLAlchemy unlike PonyORM they come with column types to assist when creating tables. Below are are a list of column types, which you can see there are a lot of different choices for a column when using SQLAlchemy. PLEASE LOOK UP EACH COLUMN TYPE TO ENSURE YOU ARE USING IT PROPERLY AND IS PERMISTED FOR YOUR DB.
+
+* ARRAY
+* BIGINT
+* BINARY
+* BLOB
+* BOOLEAN
+* BOOLEANTYPE
+* BigInteger
+* Binary
+* Boolean
+* CHAR
+* CLOB
+* Concatenable
+* DATE
+* DATETIME
+* DECIMAL
+* Date
+* DateTime
+* Emulated
+* Enum
+* FLOAT
+* Float
+* INT
+* INTEGER
+* INTEGERTYPE
+* Indexable
+* Integer
+* Interval
+* JSON
+* LargeBinary
+* MATCHTYPE
+* MatchType
+* NCHAR
+* NULLTYPE
+* NUMERIC
+* NVARCHAR
+* NativeForEmulated
+* NullType
+* Numeric
+* PickleType
+* REAL
+* SMALLINT
+* STRINGTYPE
+* SmallInteger
+* String
+* TEXT
+* TIME
+* TIMESTAMP
+* Time
+* Unicode
+* UnicodeText
+* VARBINARY
+* VARCHAR
+
 ##### Source
 
 [SQLAlchemy Documentation](sqlalchemy.org)
-
-[Sequence Changes](https://stackoverflow.com/questions/35775342/using-sqlalchemy-with-racle-and-flask-to-create-sequences-for-primary-key?rq=1) <no longer tru>
-
+[Sequence Changes](https://stackoverflow.com/questions/35775342/using-sqlalchemy-with-racle-and-flask-to-create-sequences-for-primary-key?rq=1)
 [Sequences in Oracle DB](http://nullege.com/codes/show/src%40r%40g%40RGVRSEF-HEAD%40RGVRSEF%40models.py/9/flask.ext.sqlalchemy.SQLAlchemy.Sequence/python)
-
 [Column Change Detection](blog.code4hire.com/2017/06/setting-up-alembic-to-detect-the-column-length-change/)
-
 [Flask_Migration](flask-migrate.readthedocs.io/en/latest/)
-
 [Flask_Scripts](flask-script.readthedocs.io/en/latest)
-
 [Flask_Security](pythonhosted.org/Flask-Security)
-
 [cx_Oracle](oracle.github.io/python-cx_Oracle)
+[SQLALchemy Developer Help](https://auth0.com/blog/sqlalchemy-orm-tutorial-for-python-developers/) *GREAT FOR SSO Example*
+[Column Type Information](https://docs.sqlalchemy.org/en/latest/core/type_basics.html#generic-types)
+[filter() vs filter_by()](https://stackoverflow.com/questions/2128505/whats-the-difference-between-filter-and-filter-by-in-sqlalchemy)
+[404 function](flask-sqlalchemy.pocoo.org/2.3/queries/#querying-records)

@@ -19,6 +19,15 @@ ____________
 
 ____________
 
+## Pros/Cons
+
+ORM  | Pros  | Cons
+---|---|---
+SQLAlechmy | Inheritance is easily applied and manipulated. More Libraries are able to work with SQLAlchemy | Does Not Create Sequences automaticly and Ensure tablse space is not in systems.
+PonyORM    | Creates Sequences automaticly, Creates ER Diagrahm when using online tool. Migration set up is in different file. More Tools available | Inheritance are dificult to use especially with migration changes. Not a huge community base, and library can be buggy.
+
+You can still use normal SQL Statments with both ORMS which is a great backup.
+
 Set Up
 ======
 ## Python
@@ -78,7 +87,7 @@ Oracle Serivces contains **>** Databases (ONLY XE for Express) which contains **
 Ensure a user(schema) has all the needed permissions to run queries. Below are the ones I used to achive the bare minimum
 
 ```bash
-grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER, CREATE TYPE,CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE,CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
+grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, CREATE TRIGGER,CREATE TYPE, CREATE VIEW, UNLIMITED TABLESPACE, DROP ANY SEQUENCE, CREATE SEQUENCE, CREATE ANY SEQUENCE, ALTER ANY SEQUENCE to eddy;
 ```
 
 #### Oracle Tablespace Issue
@@ -86,7 +95,7 @@ grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, CREATE MATERIALIZED V
 SQLAlchemy Does work!!! It needes to have a proper tablesapce. One of the issues SQLAlchemy has and you can read in the sources at the bottom is that when creating a user the default tablespace will be in SYSTEM. Well SQLAlchemy avoids the SYSTEM tablespacewhen making modifications because the proper way to create schemas in Oracle is to create a new tablespace and then enter users there or enter them in the USERS tablespace. Regardless, you can change the users table space by running the below command. USERS can be the new default or you can create a new tablespace.
 
 ```sh
-ALTER USER eddy DEFAULT TABLESPACE user;
+ALTER USER eddy DEFAULT TABLESPACE users;
 ```
 
 NOTE! Ensure the tablespace is PERMANENT. You can Check that by running the below command.
@@ -121,7 +130,6 @@ For some reason you need to remove socket files...not sure why but when starting
 
 This command may come up it did for me. Below is how I fixed it but probably will break something else.
 
-
 ##### Source
 
 [Markup Help](https://confluence.atlassian.com/bitbucketserver/markdown-syntax-guide-776639995.html)
@@ -135,3 +143,4 @@ This command may come up it did for me. Below is how I fixed it but probably wil
 [Checking Tablespace](http://dbaclass.com/article/ora-30033-undo-tablespace-cannot-be-specified-as-default-user-tablespace/)
 
 [Other Oracle User Fun](www.siue.edu/~dbock/cmis565/module14-1-users.htm)
+

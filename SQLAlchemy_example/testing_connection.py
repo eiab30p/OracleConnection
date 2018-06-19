@@ -1,31 +1,31 @@
 """
-SQLAlachemy attempt to intigrate with Oracle.
+SQLAlchemy attempt to integrate with Oracle.
 
 Below is an overly commented and overly detailed 
 example of how to connect to Oracle by using Libraries
-that work really well with SQLAlachemy. The 
+that work really well with SQLAlchemy. The 
 documentation for each Library can be found in the 
 Readme File.
 
 Libraries
- - FLask Security: allows a user to quickly add 
+ - Flask Security: allows a user to quickly add 
         common security mechanisms to your flask application
                 - Session Based Authentication
                 - Role Management
                 - Password Hashing
                 - Basic HTTP Authentication
-                - Token Based AUthentication / Account Activation / Password Recovery
+                - Token Based AAuthentication / Account Activation / Password Recovery
                 - User Registration
                 - Login Tracking
                 - Json/Ajax Support
- - Flask-Script: extenstion provides support for writing external scripts in Flask
+ - Flask-Script: extension provides support for writing external scripts in Flask
                 - Running development Server
-                - Customed Python SHell
+                - Custom Python Shell
                 - Scripts to DB
                 - Cronjobs
                 - Other Command Line Needs
- - Flask_Migration: Extension that handles SQLAlchemy Database Migrations using ALembic
- - CX_Oracle: Python interface with Oracle Databse
+ - Flask_Migration: Extension that handles SQLAlchemy Database Migrations using Alembic
+ - CX_Oracle: Python interface with Oracle Database
 """
 
 from flask import Flask
@@ -42,9 +42,9 @@ from os.path import join, dirname
 # Creating the Flask App
 app = Flask(__name__)
 
-# Creating envirorment variable normaly done in config.py 
+# Creating environment variable normally done in config.py 
 
-# Will Track modifications of objects and emit signals. 
+# Tracking modifications of objects and emit signals. 
 ### The default is None, which enables tracking but issues 
 ### a warning that it will be disabled by default in the future.
 ### This is more for a future tasks but when using events it will
@@ -55,7 +55,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # Connection to the Database. Format is <database type>://<username>:<password>@<ip>:<port>/<database name>
 app.config['SQLALCHEMY_DATABASE_URI'] = 'oracle://EDDY:password@localhost:1521/xe'
-# This is used for hashing and other realated Flask_Security Features
+# This is used for hashing and other related Flask_Security Features
 app.config['SECRET_KEY'] = 'RANDOMLETTERSFWLFHO212421049RFWFO'
 # This is the type of hashed used
 app.config['SECURITY_PASSWORD_HASH'] = 'pbkdf2_sha512'
@@ -81,10 +81,7 @@ class Base(db.Model):
         When called, these fields will be added to the table. Prevents duplicated code.
 
         The format for this is in the column method we select the type which may or may
-        not require the max length followed by any number of paramaters. 
-
-        The paramaters used here is creating a Sequence called BASE_SEQ which starts
-        at 1 and ofcourse this will be a primary key.
+        not require the max length followed by any number of paramaters.
 
         When inheriting this column the id will be unique sequence just the same name.
         """
@@ -97,7 +94,8 @@ class Role(Base, RoleMixin):
         
         Simple table that will have the fields in the Base Model with the below table fields.
         
-        RoleMixin is used for Flask Security. Mixin for Role model definitions"""
+        RoleMixin is used for Flask Security. Mixin for Role model definitions
+        """
 
         __tablename__ = 'auth_role'
         name = db.Column(db.String(80))
@@ -178,14 +176,14 @@ class DBInit(Command):
         """
         THis Creates SQL Tables from models above.
         There are four manger commands for this. 
-                - init: initionalize db
+                - init: initialized db
                 - migrate: find changes
                 - upgrade: upgrade database
-                - downgrade: go back to previouse version
+                - downgrade: go back to previous version
         """
 
         def __init__(self, db):
-                """Initionalizes db object."""
+                """Initializes db object."""
                 self.db = db
 
         def run(self):
@@ -203,7 +201,7 @@ class DBRegUser(Command):
         """
 
         def __init__(self, db):
-                """Initionalizes db object."""
+                """Initializes db object."""
                 self.db = db
 
         def run(self):

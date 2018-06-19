@@ -1,5 +1,5 @@
 """
-PonyOrm attempt to Intigrate with Oracle.
+PonyOrm attempt to Integrate with Oracle.
 
 Below is an overly commented and overly detailed
 example of how to connect to Oracle by using Libraries
@@ -8,16 +8,16 @@ documentation for each Library can be found in the
 Readme File.
 
 Libraries
- - Flask-Script: extenstion provides support for writing external scripts in Flask
+ - Flask-Script: extension provides support for writing external scripts in Flask
                 - Running development Server
-                - Customed Python SHell
+                - Custom Python Shell
                 - Scripts to DB
                 - Cronjobs
                 - Other Command Line Needs
- - CX_Oracle: Python interface with Oracle Databse
+ - CX_Oracle: Python interface with Oracle Database
 
  The example below for Pony is a little bit more intensive thank SQLAlchemy because
- SQLALchemy is more normalized (?) compared to Pony. To fully understand PonyORM a 
+ SQLAlchemy is more normalized (?) compared to Pony. To fully understand PonyORM a 
  more detailed example needs to be given.
 """
 
@@ -54,20 +54,46 @@ sql_debug(True)
 ## track of all commands 
 manager = Manager(app, db)
 
-# The below example is 
+# The below example is the Entity or Tables we will use for this example. 
+##This is a school schedule for a College where these are different examples
+##of relationships between the tables.
 class Department(db.Entity):
+    """
+    Department Entity.
+
+    Department table will have a unique number and name, which
+    has groups and courses.
+
+    """
+
     number = PrimaryKey(int, auto=True)
     name = Required(str, unique=True)
     groups = Set("Group")
     courses = Set("Course")
 
 class Group(db.Entity):
+    """
+    Group Entity.
+
+    Group Entity has a unique number, a major, belongs to
+    a department, and can have multiple students.
+    """
+
     number = PrimaryKey(int)
     major = Required(str)
     dept = Required("Department")
     students = Set("Student")
 
 class Course(db.Entity):
+    """
+    Course Entity.
+
+    Courses Entity needs to have name, semester, lecture hours,
+    number of credits, belongs to a department, and professor. 
+    Students can be assigned to a course and the name and semester 
+    must be unique.
+    """
+
     name = Required(str)
     semester = Required(int)
     lect_hours = Required(int)
@@ -79,9 +105,18 @@ class Course(db.Entity):
     PrimaryKey(name, semester)
 
 class Student(db.Entity):
+    """
+    Student Entity.
+
+    Student Entity must have name, date of birth, and belongs to a group.
+    Students can have a professor and can be assigned a course.
+
+    PonyORM uses byte type for images and files.
+    """
+
     name = Required(str)
     tel = Optional(str)
-    picture = Optional(buffer, lazy=True)
+    picture = Optional(bytes)
     dob = Required(date)
     gpa = Required(float, default=0)
     mentor = Optional("Professor")
@@ -89,6 +124,13 @@ class Student(db.Entity):
     courses = Set("Course")
 
 class Professor(db.Entity):
+    """
+    Professor Entity.
+
+    Professor Entity are required to have a name and a degree. 
+    They can have one or more students or courses.
+    """
+
     name = Required(str)
     tel = Optional(str)
     degree = Required(str)
@@ -97,13 +139,29 @@ class Professor(db.Entity):
 
 
 class DBRegUser(Command):
+    """
+    DBRegUser.
+
+    This class is used by manager to run the script 
+    to insert data in the database as a test. 
+
+    It is called by python testing_conntection.py dbCreateRegUser
+    """
 
     def __init__(self, db):
+        """initializes database object."""
+
         self.db = db
 
     # You can add paramaters to db_session such as serializable =True
     @orm.db_session
     def run(self):
+        """
+        run function.
+
+        This is inserting all the information needed for this test. 
+        Normally would call a library or helper function.
+        """
     
         d1 = Department(name="Department of Computer Science")
         d2 = Department(name="Department of Mathematical Science")
@@ -149,18 +207,35 @@ class DBRegUser(Command):
                      courses=[c1, c2, c5])
         s7 = Student(name='Ann Lovelace', dob=date(1988, 12, 30), tel='407-484-6710', gpa=4, group=g102,
                      courses=[c1, c3, c5, c6])
-        
+        # Always put a commit function once you have completed inserting data.
         commit()
 
 
 class GetData(Command):
+    """
+    GetData Class.
+
+    For some reason I needed another command to pull in information. 
+    It is cleaner just an extra command when running. 
+
+    You would call this class by running python testing_conntection.py GetData
+    """
 
     def __init__(self, db):
+        """initializes database object."""
+
         self.db = db
 
     # You can add paramaters to db_session such as serializable =True
     @orm.db_session
     def run(self):
+        """
+        run function.
+
+        This is console print out the results of the data entered.
+        by creation command. Mostly it is examples of different
+        types of queries.
+        """
 
         print("Studnets Names: ")
         students = select(s for s in Student)
@@ -201,14 +276,16 @@ class GetData(Command):
 
 @app.before_request
 def _():
+    """Connection establish before request."""
         orm.db_session.__enter__()
 
 @app.after_request
 def _(response):
+    """Terminate Connection after request."""
         orm.db_session.__exit__()
         return response
 
-
+# Below are command line calls to run different classes.
 manager.add_command('dbCreateRegUser', DBRegUser(db))
 manager.add_command('GetData', GetData(db))
 

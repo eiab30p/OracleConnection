@@ -1,12 +1,12 @@
-# SQLAlachemy attempt to intigrate with Oracle
+# SQLAlachemy attempt to integrate with Oracle
 
-SQLAlachemy is probably one of the most popular ORMs for python. It has a large community support with lots of library intergration to achive different task with the least amount of code. Normally SQLAlachemy would be my number one choice but due to the need of database version control it is not ideal. The resoults, findings, and code can be found in the directory. EDIT: SQLAlchemy does work!!!!!!!!!!!!!!!!!!!!!!!!
+SQLAlachemy is probably one of the most popular ORMs for python. It has a large community support with lots of library integration to achieve different task with the least amount of code. Normally SQLAlachemy would be my number one choice but due to the need of database version control it is not ideal. The results, findings, and code can be found in the directory. EDIT: SQLAlchemy is back to be my number one choice!!!!!!!!!!!!!!!!!!!!!!!!
 
 DON'T FORGET TO BE IN YOUR VENV
 
 * SQLAlchemy relies on common design pattern to allow developers to create and ship enterprise-grade, production-ready applications easily.
-* Uses Object Pool Pattern to assist in caching frequently used objects instead of creating objects each request such as databse connections. Normally the maximum would be 5 connections when connecting to the database.
-* Uses Unit of Work design pattern. It is used to maintain a list of objects affected by a business transaction and to coordinate the writting out of these changes. For SQLAlchemy this is why we uses session.
+* Uses Object Pool Pattern to assist in caching frequently used objects instead of creating objects each request such as database connections. Normally the maximum would be 5 connections when connecting to the database.
+* Uses Unit of Work design pattern. It is used to maintain a list of objects affected by a business transaction and to coordinate the writings out of these changes. For SQLAlchemy this is why we uses session.
 
 ## Installing Libraries
 
@@ -25,7 +25,7 @@ To install all libraries you will run the below command.
 pip install -r requirements.txt
 ```
 
-## Runing the Migration
+## Running the Migration
 
 To run the code for the first time you will need to create the database tables. PLEASE change the database link in the code to your personal one. Please look at notes before running on a live system. In fact DO NOT RUN ON A LIVE SYSTEM WHEN TESTING
 
@@ -35,19 +35,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'oracle://username:password@localhost:15
 
 Once the link is completed you will run the following sequence of commands.
 
-##### This is going to create all the scripts to beable to handle the migration including creating a new database table
+##### This is going to create all the scripts to be able to handle the migration including creating a new database table
 
 ```sh
 python testing_connection.py db init
 ```
 
-##### This detects the models or tables name and column information. It also creats relation tables that are needed. It will then create a script for when you are ready to migrate the information. This will be in your version directory with a number
+##### This detects the models or tables name and column information. It also creates relation tables that are needed. It will then create a script for when you are ready to migrate the information. This will be in your version directory with a number
 
 ```sh
-python testing_connection.py db migrate --message "Initional Migration"
+python testing_connection.py db migrate --message "Initial Migration"
 ```
 
-##### You will run this command when you are ready to change your database. You SHOULD go to your version that you are going to migrate and make any changes if SQLAlchemy Almbric did wrong. Here is where I found for Oracle the table being deleted and recreated. BIG NO NO when data already exists
+##### You will run this command when you are ready to change your database. You SHOULD go to your version that you are going to migrate and make any changes if SQLAlchemy Almbric did it wrong. Here is where I found for Oracle the table being deleted and recreated. BIG NO NO when data already exists
 
 ```sh
 python testing_connection.py db upgrade
@@ -64,22 +64,22 @@ Other db commands that can be used are mentioned below
 * < --help >: See available commands
 * *additional argument*  < command >  < --multidb >: Manage and migrate multiple databases.
 * < revision > : Creates an empty revision script. This is if you want to create manual scripts.
-* *optional additonal argument*  migration <--message MESSAGE>: Like git commit -m you should put a message of why the changes and what the changes were
+* *optional additional argument*  migration <--message MESSAGE>: Like git commit -m you should put a message of why the changes and what the changes were
 * < current >: Shows the current revision of the database
-* *optional additonal argument* < history > < --rev-range REV_RANGE>: This will show a list of migrations. If not range is selected it will show the entire history
+* *optional additional argument* < history > < --rev-range REV_RANGE>: This will show a list of migrations. If not range is selected it will show the entire history
 * *additional argument* < merge > < --message MESSAGE > < revisions >: THis will Merge two revisions together.
 
-with all of these commands except for help and merge you can add a --sql tag at the end and a print out of the SQL statment will be printed in the console.
+with all of these commands except for help and merge you can add a --sql tag at the end and a print out of the SQL statement will be printed in the console.
 
 ## Running Application
 
-If this application had a front end or other applications are going to call the API of this application I would run the below command.
+If this application had a front end or other applications are going to call the APIs of this application, I would run the below command.
 
 ```python
 python testing_conntection.py runserver
 ```
 
-Since I just want to test the table and DB and see what Oracle and do with SQLAlchemy I will just run the blow command which will run a function as explained in the code.
+Since I just want to test the table and DB and see what Oracle does with SQLAlchemy, I will just run the blow command which will run a function as explained in the code.
 
 ```python
 python testing_connection.py dbCreateRegUser
@@ -87,7 +87,7 @@ python testing_connection.py dbCreateRegUser
 
 ## Query Example
 
-In SQLALchemy we just have one simple query which returns the user but you can do a lot more than just that. Below are other examples of this.
+In SQLAlchemy we just have one simple query which returns the user but you can do a lot more than just that. Below are other examples of this.
 
 below are a list of functions that can be use when generator query
 
@@ -107,7 +107,7 @@ Below is an example of filter() which should return all movies after 15-01-01
 
 ```python
 movies = session.query(Movie) \
-                .filter(Movie.realse_date > date(2015, 1, 1)) \
+                .filter(Movie.realise_date > date(2015, 1, 1)) \
                 .all()
 ```
 
@@ -126,7 +126,7 @@ the_rock_movies = session.query(Movie) \
                          .all()
 ```
 
-When returning from a FLask view it is often used to return a 404 error for missing enties. Flask-SQLAlchemy provides a helper for this exact purpose. Instead of using get() you can use get_or_404() or instead of first() you can use first_or_404().
+When returning from a Flask view it is often used to return a 404 error for missing entities. Flask-SQLAlchemy provides a helper for this exact purpose. Instead of using get() you can use get_or_404() or instead of first() you can use first_or_404().
 
 ```python
 @app.route('/user/<username>')
@@ -135,10 +135,9 @@ def show_user(username):
     return render_template('show_user.html', user=user)
 ```
 
-
 ## Detecting Column Changes
 
-After running the db init command Alembic does not automaticly add column change detection. Which is a bummber but a simple fix. In the evn.py file  under the migrations directory you will add the below line. **evn.py line 75**
+After running the db init command Alembic does not automatically add column change detection. Which is a bummer but a simple fix. In the evn.py file  under the migrations directory you will add the below line. **evn.py line 75**
 
 ```python
 compare_type=True
@@ -154,9 +153,9 @@ Complete Configuration
                    **current_app.extensions['migrate'].configure_args)
 ```
 
-## SQLALchemy Sequence Notes Edited: 6/12/2018
+## SQLAlchemy Sequence Notes Edited: 6/12/2018
 
-To have auto increamence, WITH ORACLE ONLY, you will need to use Sequence. SqlAlchemy does not know how to create sequences on it's own aparently. Therefore we have to change the upgrade code in the migration folder.
+To have auto increments, WITH ORACLE ONLY, you will need to use Sequence. SqlAlchemy does not know how to create sequences on it's own apparently. Therefore we have to change the upgrade code in the migration folder.
 
 Below is an example sequence. You'll go to your migration folder, then to a version#.py file and under the upgrades function you will need to have line like below. (id is the name of the sequence)
 
@@ -164,9 +163,9 @@ Below is an example sequence. You'll go to your migration folder, then to a vers
 op.execute('create sequence id start with 1 increment by 1 nocache nocycle')
 ```
 
-## SQLAlchemy Alembric Notes Edited: 6/12/2018
+## SQLAlchemy Alembic Notes Edited: 6/12/2018
 
-~~As mentioned before Alembric does not like Oracle and did not alter the columns as requested. It would delted the DB and apply the changes as if it was a new table or result in an error because the table already exist. If you were like me you just said FML. Well a work around is by hard coding each migration alteration. With this you will need to do an upgrade and downgrade. Below is an example of wow this will look.~~
+~~As mentioned before Alembic does not like Oracle and did not alter the columns as requested. It would delete the DB and apply the changes as if it was a new table or result in an error because the table already exist. If you were like me you just said FML. Well a work around is by hard coding each migration alteration. With this you will need to do an upgrade and downgrade. Below is an example of wow this will look.~~
 
 You do not need to do a manual upgrade or downgrade but is is good to know.
 
@@ -190,7 +189,7 @@ docs.sqlalchemy.org/en/latest/orm/events.html#mapper-events
 
 ## SQLAlchemy Model Column Types
 
-For SQLAlchemy unlike PonyORM they come with column types to assist when creating tables. Below are are a list of column types, which you can see there are a lot of different choices for a column when using SQLAlchemy. PLEASE LOOK UP EACH COLUMN TYPE TO ENSURE YOU ARE USING IT PROPERLY AND IS PERMISTED FOR YOUR DB.
+For SQLAlchemy unlike PonyORM they come with column types to assist when creating tables. Below are are a list of column types, which you can see there are a lot of different choices for a column when using SQLAlchemy. PLEASE LOOK UP EACH COLUMN TYPE TO ENSURE YOU ARE USING IT PROPERLY AND IS PERMITTED FOR YOUR DB.
 
 * ARRAY
 * BIGINT
@@ -255,7 +254,7 @@ For SQLAlchemy unlike PonyORM they come with column types to assist when creatin
 [Flask_Scripts](flask-script.readthedocs.io/en/latest)
 [Flask_Security](pythonhosted.org/Flask-Security)
 [cx_Oracle](oracle.github.io/python-cx_Oracle)
-[SQLALchemy Developer Help](https://auth0.com/blog/sqlalchemy-orm-tutorial-for-python-developers/) *GREAT FOR SSO Example*
+[SQLAlchemy Developer Help](https://auth0.com/blog/sqlalchemy-orm-tutorial-for-python-developers/) *GREAT FOR SSO Example*
 [Column Type Information](https://docs.sqlalchemy.org/en/latest/core/type_basics.html#generic-types)
 [filter() vs filter_by()](https://stackoverflow.com/questions/2128505/whats-the-difference-between-filter-and-filter-by-in-sqlalchemy)
 [404 function](flask-sqlalchemy.pocoo.org/2.3/queries/#querying-records)

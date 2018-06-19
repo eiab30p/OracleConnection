@@ -1,5 +1,6 @@
-# PonyORM 
-PonyORM is the newest ORM available for Python and for multiple other languages. Unfortunently, it does not have the support community as other ORM. Since this is a young library it is still buggy and may need to change conditions in the library itself, especially the migration scripts they have started the library just in the last couple.
+# PonyORM
+
+PonyORM is the newest ORM available for Python and for multiple other languages. Unfortunately, it does not have the support community as other ORMs. Since this is a young library it is still buggy and may need to change conditions in the library itself, especially the migration scripts they have developed.
 
 # Installing Libraries
 
@@ -16,9 +17,9 @@ To install all libraries you will run the below command.
 pip install -r requirements.txt
 ```
 
-## Runing the Migration
+## Running the Migration
 
-To run the code for the first time you will need to do is to connect with the db. Change the paramaters in db_parms to your database below is the example used. Please look at notes before running on a live system. In fact DO NOT RUN ON A LIVE SYSTEM WHEN TESTING
+To run the code for the first time you will need to do is to connect with the db. Change the parameters in db_params to your database below is the example used. Please look at notes before running on a live system. In fact DO NOT RUN ON A LIVE SYSTEM WHEN TESTING
 
 ```python
 db_params = {
@@ -50,7 +51,7 @@ python migrations.py make
 python migrations.py apply
 ```
 
-There are other commands you can use as well. They won't be used as much but defiently worth knowing. 
+There are other commands you can use as well. They won't be used as much but defiantly worth knowing.
 
 * < apply --fake-initial > : This is used when the tables in the DB are already created.
 * < make --empty > : When you need a custom migration due to data change and not a schema change
@@ -66,13 +67,13 @@ If this application had a front end or other applications are going to call the 
 python testing_conntection.py runserver
 ```
 
-Since I just want to test the table and DB and see what Oracle interacts with PonyORM I will just run the below command which will run a function as explained in the code.
+Since I just want to test the table, DB and see how Oracle interacts with PonyORM. Meaning, I will just run the below command which will run a function as explained in the code.
 
 ```python
 python testing_connection.py dbCreateRegUser
 ```
 
-For this example I needed to create another script to print out the results to ensure they are bing save. Therefore, I created multiple scripts for this example.
+For this example I needed to create another script to print out the results to ensure they are being save. Therefore, I created multiple scripts for this example.
 
 ```python
 python testing_connection.py GetData
@@ -84,7 +85,7 @@ In the code there are a few examples of queries mostly with selects with basic l
 
 For inserting records ensure you have the commit() at the end, else it will not commit the data over.
 
-For retrieving data you can use a series of different functions listed below
+For retrieving data you can use a series of different functions as listed below
 
 You declare the object outside of the select function for a lambda
 
@@ -92,13 +93,13 @@ You declare the object outside of the select function for a lambda
 Customer.select(lambda c: c.country =='USA')
 ```
 
-you can use count() to get a total within your select statment.
+you can use count() to get a total within your select statement.
 
 ```python
 select((c.country, count(c)) for c in Customer)
 ```
 
-You can also chain up different functions as well as use such as
+You can also chain up different functions as well
 
 * order_by
 * desc
@@ -112,13 +113,13 @@ Example of an order_by descending by sum and return the first result. So it shou
 Product.select().order_by(lambda p : desc(sum(p.order_items.quantity))).first()
 ```
 
-Example of another order_by but we want to get the first three most caluable customers
+Example of another order_by but we want to get the first three most valuable customers
 
 ```python
 Customer.select().order_by(lambda c : desc(sum(c.orders.total_price)))[:3]
 ```
 
-Example of a left_join which will return cutomers who orders exist. You can use exists() but this is a left_join example
+Example of a left_join which will return customers who orders exist. You can use exists() but this is a left_join example
 
 ```python
 left_join(c for c in Customer for o in c.orders if o is None)
@@ -139,7 +140,7 @@ FROM "Order" "O"
 WHERE "o"."date_created" >= ?
 ```
 
-DISCTINCT is almsot allways used in queries if you don't you will add .without_distinct() to the end of the query
+DISTINCT is almost always used in queries if you don't you will add .without_distinct() to the end of the query
 
 Below are a list of functions that can be use inside when generator query
 
@@ -153,9 +154,9 @@ Below are a list of functions that can be use inside when generator query
 * concat() : Concatenatenates arguments into one string
 * random() : selects a random return
 * select() : Select the table
-* sum() : total by additon
+* sum() : total by addition
 * getattr() : python function that can get attribute value
-* between() : returns results between such condtion looks like x >= a AND x<=b
+* between() : returns results between such condition looks like x >= a AND x<=b
 
 concat() example
 
@@ -168,25 +169,25 @@ Raw Query Function: You can use two different functions
 * select_by_sql()
 * get_by_sql()
 
-There isn't a diffirece between the two but the query will NOT return an object but alist of entity instances.
+There isn't a difference between the two but the query will NOT return an object but a list of entity instances.
 
-You can also make this pythonic when it comes to paramaters. Below is an exampel of this
+You can also make this pythonic when it comes to parameters. Below is an example of this
 
 ```python
 Product.select_by_sql("SELECT * FROM Product WHERE price > $x OR price = $( y * 2)", globals={'x':100}, locals={'y':200})
 ```
 
-Variable and more complex expressions specified after the $ sign, will be automatically calculated and transferred into the query as parameters, which makes SQL-Injections impossible. Ony automatically replaces $x in the query string with "?", "%S" or with other paramstyle, used in your database.
+Variable and more complex expressions specified after the $ sign, will be automatically calculated and transferred into the query as parameters, which makes SQL-Injections impossible. Ony automatically replaces $x in the query string with "?", "%S" or with other param style, used in your database.
 
-If you need to use the $ sign in the query (for eample, in the name of a syustem table), you have write two $ signs in succession: $
+If you need to use the $ sign in the query (for example, in the name of a system table), you have write two $ signs in succession: $
 
 ## Inheritance (Don't Use unless you Fully understand it)
 
-Working with PonyORM I tried to use inheritance like I did for base in SQLAlchemy. Unfortunently, it works in simple cases. For PonyORM, when using inheratance it creates one table for that inheratance, which isn't right when thinking of creating a database or how a database should be made. PonyORM claims this is faster but than creating joins and relationships but it is not easier and harder to create joins where you need them just like the example user in this file. 
+Working with PonyORM I tried to use inheritance like I did for base in SQLAlchemy. Unfortunately, it works in simple cases. For PonyORM, when using inheritance it creates one table for that inheritance, which isn't right when thinking of creating a database or how a database should be made. PonyORM claims this is faster but than creating joins and relationships but it is not easier and harder to create joins where you need them just like the example user in this file.
 
 ## PonyORM Entity Attribute Types
 
-For pony unlike SQLAlchemy you will need to import additional libraries for your attribute as you can see in the code for Date and Deciaml. Below are a possibly list of attributes that can be used.
+For pony unlike SQLAlchemy you will need to import additional libraries for your attribute as you can see in the code for Date and Decimal. Below are a possibly list of attributes that can be used.
 
 * str
 * unicode
@@ -205,9 +206,33 @@ For pony unlike SQLAlchemy you will need to import additional libraries for your
 * UUID
 * Json - used for mapping to native database JSON type
 
+## Migration Fix
+
+While trying to work with PonyORM Migration there was an issue when adjusting tables in the database. It would throw an error, therefore you will need to go to line **/venv/lib/python3.6/site-packages/pony/migrate/executor.py line 115**. You will need to remove the new attribute in the condition and it works.
+
+BEFORE
+
+```python
+created_prev_tables = set()
+        for table in self.prev_schema.order_tables_to_create():
+            for prev_obj in reversed(table.get_objects_to_create(created_prev_tables)):
+                if prev_obj.new is None:
+                    ops.extend(prev_obj.get_drop_ops())
+```
+
+AFTER
+
+```python
+created_prev_tables = set()
+        for table in self.prev_schema.order_tables_to_create():
+            for prev_obj in reversed(table.get_objects_to_create(created_prev_tables)):
+                if prev_obj is None:
+                    ops.extend(prev_obj.get_drop_ops())
+```
+
 ##### Source
 
-[PonyORM](https://docs.ponyorm.com/firststeps.html)   
+[PonyORM](https://docs.ponyorm.com/firststeps.html)
 [Functions with Entities](https://docs.ponyorm.com/api_reference.html#attribute-type)
 [Creating Fields](https://docs.ponyorm.com/api_reference.html#entity-definition)
 [Entity Customizing](https://docs.ponyorm.com/entities.html#mapping-customization)

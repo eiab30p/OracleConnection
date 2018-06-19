@@ -145,7 +145,7 @@ class DBRegUser(Command):
     This class is used by manager to run the script 
     to insert data in the database as a test. 
 
-    It is called by python testing_conntection.py dbCreateRegUser
+    It is called by python testing_connection.py dbCreateRegUser
     """
 
     def __init__(self, db):
@@ -218,7 +218,7 @@ class GetData(Command):
     For some reason I needed another command to pull in information. 
     It is cleaner just an extra command when running. 
 
-    You would call this class by running python testing_conntection.py GetData
+    You would call this class by running python testing_connection.py GetData
     """
 
     def __init__(self, db):

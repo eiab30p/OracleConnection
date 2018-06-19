@@ -64,7 +64,7 @@ There are other commands you can use as well. They won't be used as much but def
 If this application had a front end or other applications are going to call the API of this application I would run the below command.
 
 ```python
-python testing_conntection.py runserver
+python testing_connection.py runserver
 ```
 
 Since I just want to test the table, DB and see how Oracle interacts with PonyORM. Meaning, I will just run the below command which will run a function as explained in the code.
